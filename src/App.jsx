@@ -52,13 +52,14 @@ const fmtMoney = (n) => {
 };
 
 function Nav({ active }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/70 backdrop-blur-md border-b hairline">
-      <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         <a href="#home" className="text-white hover:text-neutral-200 transition">
           <Logo />
         </a>
-        <div className="flex gap-1">
+        <div className="hidden md:flex gap-1">
           {NAV.map((n) => (
             <a
               key={n.id}
@@ -71,14 +72,41 @@ function Nav({ active }) {
             </a>
           ))}
         </div>
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden text-white p-2"
+          aria-label="Menu"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {menuOpen
+              ? <path d="M18 6L6 18M6 6l12 12" />
+              : <><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></>}
+          </svg>
+        </button>
       </div>
+      {menuOpen && (
+        <div className="md:hidden border-t hairline bg-black/95 backdrop-blur-md">
+          {NAV.map((n) => (
+            <a
+              key={n.id}
+              href={`#${n.id}`}
+              onClick={() => setMenuOpen(false)}
+              className={`block px-6 py-3 text-xs uppercase tracking-[0.15em] transition-colors border-b hairline ${
+                active === n.id ? 'text-white bg-white/5' : 'text-neutral-500'
+              }`}
+            >
+              {n.label}
+            </a>
+          ))}
+        </div>
+      )}
     </nav>
   );
 }
 
 function Home() {
   return (
-    <section id="home" className="min-h-screen flex flex-col px-6 pt-24 pb-10 relative overflow-hidden">
+    <section id="home" className="min-h-screen flex flex-col px-4 sm:px-6 pt-20 sm:pt-24 pb-10 relative overflow-hidden">
       {/* Background arc motif */}
       <HeroArc />
 
@@ -96,7 +124,7 @@ function Home() {
           </div>
         </Reveal>
 
-        <h1 className="text-6xl sm:text-7xl md:text-8xl font-extrabold tracking-tight leading-[0.9]">
+        <h1 className="text-5xl sm:text-6xl md:text-8xl font-extrabold tracking-tight leading-[0.9]">
           <SplitText text="Your life," as="span" className="block" />
           <SplitText text="on an arc." as="span" className="block text-neutral-500" delay={40} />
         </h1>
@@ -130,8 +158,8 @@ function Home() {
         <Reveal delay={1200}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5">
             {[
-              { n: '38', l: 'Colleges' },
-              { n: '19', l: 'Careers' },
+              { n: '54', l: 'Colleges' },
+              { n: '30', l: 'Careers' },
               { n: '35', l: 'Years modeled' },
               { n: '0', l: 'Backend calls' },
             ].map((s) => (
@@ -155,13 +183,13 @@ function Home() {
 
 function About() {
   const features = [
-    { n: '01', t: 'Start at college', d: '38 real campuses with acceptance rates, recommended GPA/SAT, cost, debt, and a happiness + stress forecast for your four years on campus.' },
-    { n: '02', t: 'Real careers, real tradeoffs', d: 'Nineteen paths with BLS-sourced salary curves, stress baselines, creativity, purpose, and job security.' },
+    { n: '01', t: 'Start at college', d: '54 real campuses with acceptance rates, recommended GPA/SAT, cost, debt, and a happiness + stress forecast for your four years on campus.' },
+    { n: '02', t: 'Real careers, real tradeoffs', d: 'Thirty career paths with BLS-sourced salary curves, stress baselines, creativity, purpose, and job security.' },
     { n: '03', t: 'Your preferences matter', d: 'Ambition, risk tolerance, work-life balance, savings rate, and location. Each dial measurably shifts your trajectory.' },
     { n: '04', t: 'Frontend-only', d: 'No backend. No sign-up. Nothing leaves your browser. The simulation is pure math running live on every render.' },
   ];
   return (
-    <section id="about" className="min-h-screen px-6 py-28">
+    <section id="about" className="min-h-screen px-4 sm:px-6 py-16 sm:py-28">
       <div className="max-w-6xl mx-auto">
         <div className="text-[10px] uppercase tracking-[0.3em] text-neutral-500 mb-6 mono">—  About</div>
         <h2 className="text-4xl md:text-5xl font-semibold tracking-tight max-w-2xl leading-tight">
@@ -191,12 +219,12 @@ function About() {
 
 function HowItWorks() {
   const steps = [
-    { n: '01', t: 'Pick a college', d: 'Choose a major, then browse 38 campuses ranked by program fit. See the GPA/SAT you\'d need, the cost, and how happy (or stressed) you\'d be for four years.' },
+    { n: '01', t: 'Pick a college', d: 'Choose a major, then browse 54 campuses ranked by program fit. See the GPA/SAT you\'d need, the cost, and how happy (or stressed) you\'d be for four years.' },
     { n: '02', t: 'Choose a career', d: 'Your major filters to matching careers. Pick one, tune ambition, savings, risk, and location. The sim recalculates on every frame.' },
     { n: '03', t: 'Read the outcome', d: 'Charts show income, net worth, happiness, stress, and skill over 35 years — starting from your college debt. Life events mark the turning points.' },
   ];
   return (
-    <section id="how" className="min-h-screen px-6 py-28 border-t hairline">
+    <section id="how" className="min-h-screen px-4 sm:px-6 py-16 sm:py-28 border-t hairline">
       <div className="max-w-6xl mx-auto">
         <div className="text-[10px] uppercase tracking-[0.3em] text-neutral-500 mb-6 mono">—  How it works</div>
         <h2 className="text-4xl md:text-5xl font-semibold tracking-tight max-w-2xl leading-tight">
@@ -206,7 +234,7 @@ function HowItWorks() {
         <div className="mt-20 space-y-px bg-white/5">
           {steps.map((s, i) => (
             <Reveal key={s.n} delay={i * 120}>
-              <Spotlight className="bg-black p-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+              <Spotlight className="bg-black p-5 sm:p-10 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-start">
                 <div className="md:col-span-2 text-5xl font-semibold text-neutral-700 mono">{s.n}</div>
                 <div className="md:col-span-4">
                   <h3 className="text-2xl font-medium text-white">{s.t}</h3>
@@ -280,7 +308,7 @@ function Simulator({ majorId, collegeId }) {
   }, [summary]);
 
   return (
-    <section id="simulator" className="px-6 py-28 border-t hairline">
+    <section id="simulator" className="px-4 sm:px-6 py-16 sm:py-28 border-t hairline">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
           <div>
@@ -302,7 +330,7 @@ function Simulator({ majorId, collegeId }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-px bg-white/5">
 
           {/* LEFT: inputs */}
-          <div className="lg:col-span-5 bg-black p-8 space-y-10">
+          <div className="lg:col-span-5 bg-black p-4 sm:p-8 space-y-8 sm:space-y-10">
 
             {/* Career picker */}
             <div>
@@ -360,7 +388,7 @@ function Simulator({ majorId, collegeId }) {
             {/* Location */}
             <div>
               <h3 className="text-xs uppercase tracking-[0.2em] text-neutral-400 mb-4">Location</h3>
-              <div className="grid grid-cols-4 gap-px bg-white/10">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/10">
                 {LOCATIONS.map((l) => (
                   <button
                     key={l.id}
@@ -404,7 +432,7 @@ function Simulator({ majorId, collegeId }) {
           </div>
 
           {/* RIGHT: outputs */}
-          <div className="lg:col-span-7 bg-black p-8 space-y-10">
+          <div className="lg:col-span-7 bg-black p-4 sm:p-8 space-y-8 sm:space-y-10">
 
             {/* Verdict */}
             <div>
@@ -414,7 +442,7 @@ function Simulator({ majorId, collegeId }) {
                   today's $ · BLS-informed
                 </span>
               </div>
-              <div className="text-5xl md:text-6xl font-semibold tracking-tight">{verdict}.</div>
+              <div className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight">{verdict}.</div>
               <div className="text-sm text-neutral-400 mt-3">
                 As a <span className="text-white">{career.name.toLowerCase()}</span> at the <span className="text-white">{summary.percentile}th percentile</span> in {location.label.toLowerCase()} · {events.length} major events
                 {college && (
@@ -548,7 +576,7 @@ function Methodology() {
 
 function Footer() {
   return (
-    <footer className="px-6 py-12 border-t hairline">
+    <footer className="px-4 sm:px-6 py-12 border-t hairline">
       <div className="max-w-6xl mx-auto flex items-center justify-between flex-wrap gap-4">
         <Logo />
         <div className="text-[11px] text-neutral-500 uppercase tracking-[0.2em]">

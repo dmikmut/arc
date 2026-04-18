@@ -9,8 +9,8 @@ export default function Timeline({ events }) {
   return (
     <div className="divide-y divide-white/5">
       {events.map((ev, i) => (
-        <div key={i} className="flex items-center gap-6 py-4">
-          <div className="text-xs text-neutral-500 tracking-wider mono w-16">
+        <div key={i} className="flex items-start sm:items-center gap-3 sm:gap-6 py-4">
+          <div className="text-xs text-neutral-500 tracking-wider mono w-12 sm:w-16 shrink-0">
             AGE {ev.age}
           </div>
           <div className="flex-1">
@@ -26,8 +26,8 @@ export default function Timeline({ events }) {
               })}
             </div>
           </div>
-          <div className={`text-[10px] tracking-[0.2em] uppercase ${ev.negative ? 'text-rose-400' : 'text-emerald-400'}`}>
-            {ev.negative ? '— DOWN' : '+ UP'}
+          <div className={`text-[10px] tracking-[0.1em] sm:tracking-[0.2em] uppercase shrink-0 ${ev.negative ? 'text-rose-400' : 'text-emerald-400'}`}>
+            {ev.negative ? '—' : '+'}
           </div>
         </div>
       ))}

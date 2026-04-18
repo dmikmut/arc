@@ -95,7 +95,7 @@ function CollegeCard({ college, fit, chance, chanceIS, chanceOOS, testMode, stud
           </div>
         </div>
       </div>
-      <div className={`mt-3 pt-3 border-t grid grid-cols-4 gap-2 text-[10px] uppercase tracking-wider ${
+      <div className={`mt-3 pt-3 border-t grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] uppercase tracking-wider ${
         selected ? 'border-black/10 text-neutral-600' : 'border-white/10 text-neutral-500'
       }`}>
         <div>
@@ -271,10 +271,10 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
   const experience = collegeExperience(college);
 
   return (
-    <section id="college" className="min-h-screen px-6 py-28 border-t hairline">
+    <section id="college" className="min-h-screen px-4 sm:px-6 py-16 sm:py-28 border-t hairline">
       <div className="max-w-6xl mx-auto">
         <div className="text-[10px] uppercase tracking-[0.3em] text-neutral-500 mb-6 mono">—  Before the career</div>
-        <h2 className="text-4xl md:text-5xl font-semibold tracking-tight max-w-3xl leading-tight">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight max-w-3xl leading-tight">
           Pick a major, pick a campus.
         </h2>
         <p className="text-neutral-400 mt-6 max-w-2xl text-base leading-relaxed">
@@ -284,7 +284,7 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
         </p>
 
         {/* ==== YOUR STATS ==== */}
-        <div className="mt-16 border hairline p-6 bg-black">
+        <div className="mt-12 sm:mt-16 border hairline p-4 sm:p-6 bg-black">
           <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
             <div>
               <div className="text-[10px] uppercase tracking-[0.3em] text-neutral-500 mono">Your profile</div>
@@ -293,9 +293,9 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
             <div className="text-[11px] text-neutral-500">Admission % updates live on every college below</div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/5">
             {/* GPA row */}
-            <div className="bg-black p-5 space-y-5">
+            <div className="bg-black p-4 sm:p-5 space-y-5">
               <div className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">GPA</div>
               <StatInput label="Unweighted GPA" value={studentGPA} onChange={setStudentGPA}
                 min={1.0} max={4.0} step={0.01} sliderMin={2.0} sliderMax={4.0} sliderStep={0.01} />
@@ -307,7 +307,7 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
             </div>
 
             {/* Test scores row */}
-            <div className="bg-black p-5 space-y-5">
+            <div className="bg-black p-4 sm:p-5 space-y-5">
               <div className="flex items-center justify-between">
                 <div className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">Test scores</div>
                 <div className="flex gap-px bg-white/5">
@@ -403,7 +403,7 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
             <h3 className="text-xs uppercase tracking-[0.2em] text-neutral-400">Major</h3>
             <span className="text-[11px] text-neutral-500 mono">{MAJORS.length} options</span>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-px bg-white/5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px bg-white/5">
             {MAJORS.map((m) => (
               <MajorChip
                 key={m.id}
@@ -417,7 +417,7 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
 
         {/* ==== MAJOR → CAREERS ==== */}
         {major && (
-          <div className="mt-10 border hairline p-6 bg-black">
+          <div className="mt-10 border hairline p-4 sm:p-6 bg-black">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
               <div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 mono">Careers this major feeds</div>
@@ -447,7 +447,7 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
         <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-px bg-white/5">
 
           {/* LEFT: ranked college list */}
-          <div className="lg:col-span-5 bg-black p-6">
+          <div className="lg:col-span-5 bg-black p-4 sm:p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xs uppercase tracking-[0.2em] text-neutral-400">
                 Colleges for {major?.name}
@@ -490,9 +490,9 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
           </div>
 
           {/* RIGHT: selected college */}
-          <div className="lg:col-span-7 bg-black p-8 space-y-8">
+          <div className="lg:col-span-7 bg-black p-4 sm:p-8 space-y-6 sm:space-y-8">
             <div>
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
                 <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">Campus</span>
                 <span className="text-[10px] uppercase tracking-[0.15em] px-2 py-0.5 border hairline text-neutral-400 mono">
                   {college.region}
@@ -501,7 +501,7 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
                   {diff.label}
                 </span>
               </div>
-              <div className="text-4xl md:text-5xl font-semibold tracking-tight">{college.name}</div>
+              <div className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight">{college.name}</div>
               <div className="text-sm text-neutral-400 mt-2">{college.city} · {college.type}</div>
               <p className="text-sm text-neutral-300 mt-5 leading-relaxed border-l-2 border-white/20 pl-4">
                 {college.motto}
@@ -509,7 +509,7 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
             </div>
 
             {/* Key stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/5">
               <StatPill
                 label="Accept rate"
                 value={`${(college.accept * 100).toFixed(1)}%`}
@@ -543,7 +543,7 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
                   return (
                     <>
                       <div className="flex items-baseline gap-3 mb-1">
-                        <div className={`text-5xl font-semibold mono tracking-tight ${displayChance != null ? chanceColor(displayChance) : ''}`}>
+                        <div className={`text-4xl sm:text-5xl font-semibold mono tracking-tight ${displayChance != null ? chanceColor(displayChance) : ''}`}>
                           {displayChance != null ? `${displayChance}%` : '—'}
                         </div>
                         <div className="text-sm text-neutral-500">
@@ -640,7 +640,7 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
                   Fit for {major?.name}
                 </div>
                 <div className="flex items-baseline gap-3">
-                  <div className="text-5xl font-semibold mono tracking-tight">{fit}</div>
+                  <div className="text-4xl sm:text-5xl font-semibold mono tracking-tight">{fit}</div>
                   <div className="text-sm text-neutral-500">/ 100</div>
                 </div>
                 <div className="mt-4 h-1 bg-white/10 w-full">
@@ -670,11 +670,11 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
             </div>
 
             {/* 4-year preview */}
-            <div className="border hairline p-5">
+            <div className="border hairline p-4 sm:p-5">
               <div className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 mono mb-4">
                 —  Four-year preview
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
                 <div>
                   <div className="text-[11px] uppercase tracking-wider text-neutral-500">Sticker price</div>
                   <div className="text-xl font-semibold mono mt-1">{fmtMoney(college.cost)}</div>
