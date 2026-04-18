@@ -1,16 +1,18 @@
-# React + Vite
+# Arc — Life Decision Simulator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**[arc-sim.vercel.app](https://arc-sim.vercel.app)**
 
-Currently, two official plugins are available:
+Pick a major, pick a college, simulate your career — see how life plays out before you commit.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **30 majors** — CS, engineering, pre-med, business, arts, and more
+- **55+ colleges** — real stats from IPEDS, College Scorecard, and CDS data
+- **In-state vs out-of-state** admission chances for all public schools
+- **Admission estimator** — GPA, weighted GPA, SAT/ACT, extracurriculars fed into a calibrated model
+- **30+ careers** — salary trajectories, stress, prestige, purpose scores from BLS data
+- **Life simulator** — 40-year projection with net worth, happiness, life events, and randomness
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+React 19 · Vite · Tailwind CSS · Recharts
