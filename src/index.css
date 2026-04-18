@@ -1,0 +1,68 @@
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: 'Satoshi', system-ui, sans-serif;
+  background: #0a0a0a;
+  color: #ededed;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #262626; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #404040; }
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2px;
+  background: linear-gradient(to right, #ededed var(--val, 50%), #262626 var(--val, 50%));
+  border-radius: 999px;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ededed;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+.mono { font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+
+input[type="number"] { -moz-appearance: textfield; }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+.hairline { border-color: rgba(255,255,255,0.08); }
+
+section {
+  scroll-margin-top: 80px;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.9s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.reveal.shown {
+  opacity: 1;
+  transform: translateY(0);
+}
