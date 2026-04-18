@@ -317,7 +317,7 @@ function Simulator({ majorId, collegeId }) {
           </div>
           <button
             onClick={() => setSeed(Math.floor(Math.random() * 10000))}
-            className="group flex items-center gap-2.5 px-5 py-2.5 bg-white text-black text-xs font-medium uppercase tracking-[0.15em] hover:bg-neutral-200 active:scale-95 transition-all"
+            className="hidden sm:flex group items-center gap-2.5 px-5 py-2.5 bg-white text-black text-xs font-medium uppercase tracking-[0.15em] hover:bg-neutral-200 active:scale-95 transition-all"
           >
             <svg className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M1 4v6h6" /><path d="M23 20v-6h-6" />
@@ -465,6 +465,18 @@ function Simulator({ majorId, collegeId }) {
               <StatCard label="Income percentile" rawNumber={summary.percentile} format={(v) => `${Math.round(v)}th`} sub="for this career" />
               <StatCard label="Final skill" rawNumber={summary.finalSkill} format={(v) => `${Math.round(v)}`} sub="experience built" />
             </div>
+
+            {/* Mobile reroll */}
+            <button
+              onClick={() => setSeed(Math.floor(Math.random() * 10000))}
+              className="sm:hidden group flex items-center justify-center gap-2.5 w-full py-3 bg-white text-black text-xs font-medium uppercase tracking-[0.15em] active:scale-95 transition-all"
+            >
+              <svg className="w-4 h-4 group-active:rotate-180 transition-transform duration-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 4v6h6" /><path d="M23 20v-6h-6" />
+                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
+              </svg>
+              Reroll luck
+            </button>
 
             {/* Charts */}
             <div>
