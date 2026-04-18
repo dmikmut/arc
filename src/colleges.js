@@ -737,19 +737,19 @@ export function admissionChance(college, student, inState = null) {
   // Normalized with non-linear scaling: outstanding (90+) matters more
   const extraNorm = (extra - 50) / 50;
   const extraScore = extraNorm >= 0
-    ? extraNorm * (1 + extraNorm * 0.6)   // outstanding ECs compound
-    : extraNorm * (1 + Math.abs(extraNorm) * 0.3);
+    ? extraNorm * (1 + extraNorm * 0.8)   // outstanding ECs compound
+    : extraNorm * (1 + Math.abs(extraNorm) * 0.4);
 
   // ── Factor weights by tier ──
   // Ultra-selective = holistic (ECs, rigor dominate when everyone has 4.0/1560)
   // Accessible = stats-driven
   const weights = [
-    [0.24, 0.24, 0.20, 0.32],  // tier 0: ultra — ECs/rigor decisive
-    [0.28, 0.28, 0.16, 0.28],  // tier 1: hyper
-    [0.32, 0.32, 0.14, 0.22],  // tier 2: elite
-    [0.36, 0.36, 0.12, 0.16],  // tier 3: selective
-    [0.40, 0.38, 0.10, 0.12],  // tier 4: competitive
-    [0.42, 0.40, 0.08, 0.10],  // tier 5: accessible
+    [0.22, 0.22, 0.18, 0.38],  // tier 0: ultra — ECs/rigor decisive
+    [0.26, 0.26, 0.15, 0.33],  // tier 1: hyper
+    [0.30, 0.30, 0.13, 0.27],  // tier 2: elite
+    [0.34, 0.34, 0.11, 0.21],  // tier 3: selective
+    [0.38, 0.36, 0.10, 0.16],  // tier 4: competitive
+    [0.40, 0.38, 0.08, 0.14],  // tier 5: accessible
   ][tier];
 
   const composite =
