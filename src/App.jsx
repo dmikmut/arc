@@ -214,7 +214,7 @@ function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5">
             {[
               { n: '54', l: 'Colleges' },
-              { n: '30', l: 'Careers' },
+              { n: '42', l: 'Careers' },
               { n: '35', l: 'Years modeled' },
               { n: '0', l: 'Backend calls' },
             ].map((s) => (
@@ -239,7 +239,7 @@ function Home() {
 function About() {
   const features = [
     { n: '01', t: 'Start at college', d: '54 real campuses with acceptance rates, recommended GPA/SAT, cost, debt, and a happiness + stress forecast for your four years on campus.' },
-    { n: '02', t: 'Real careers, real tradeoffs', d: 'Thirty career paths with BLS-sourced salary curves, stress baselines, creativity, purpose, and job security.' },
+    { n: '02', t: 'Real careers, real tradeoffs', d: '42 career paths with BLS-sourced salary curves, stress baselines, creativity, purpose, and job security.' },
     { n: '03', t: 'Your preferences matter', d: 'Ambition, risk tolerance, work-life balance, savings rate, and location. Each dial measurably shifts your trajectory.' },
     { n: '04', t: 'Frontend-only', d: 'No backend. No sign-up. Nothing leaves your browser. The simulation is pure math running live on every render.' },
   ];
@@ -378,9 +378,9 @@ function Simulator({ majorId, collegeId }) {
           </div>
           <button
             onClick={() => setSeed(Math.floor(Math.random() * 10000))}
-            className="hidden sm:flex group items-center gap-2.5 px-5 py-2.5 bg-white text-black text-xs font-medium uppercase tracking-[0.15em] hover:bg-neutral-200 active:scale-95 transition-all"
+            className="hidden sm:flex group items-center gap-3 px-6 py-3 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-sm font-semibold uppercase tracking-[0.12em] hover:from-violet-400 hover:to-fuchsia-400 active:scale-95 transition-all shadow-lg shadow-violet-500/25 rounded-sm"
           >
-            <svg className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M1 4v6h6" /><path d="M23 20v-6h-6" />
               <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
             </svg>
@@ -551,9 +551,9 @@ function Simulator({ majorId, collegeId }) {
             {/* Mobile reroll */}
             <button
               onClick={() => setSeed(Math.floor(Math.random() * 10000))}
-              className="sm:hidden group flex items-center justify-center gap-2.5 w-full py-3 bg-white text-black text-xs font-medium uppercase tracking-[0.15em] active:scale-95 transition-all"
+              className="sm:hidden group flex items-center justify-center gap-3 w-full py-4 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-sm font-semibold uppercase tracking-[0.12em] active:scale-95 transition-all shadow-lg shadow-violet-500/25 rounded-sm"
             >
-              <svg className="w-4 h-4 group-active:rotate-180 transition-transform duration-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="w-5 h-5 group-active:rotate-180 transition-transform duration-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M1 4v6h6" /><path d="M23 20v-6h-6" />
                 <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
               </svg>
