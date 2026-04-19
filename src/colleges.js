@@ -684,6 +684,65 @@ export function estimateRecWGPA(recGPA) {
   return Math.min(5.0, recGPA + 0.30);
 }
 
+// ── CDS-sourced SAT middle-50 ranges (25th, 75th percentile) ──
+// Source: Common Data Set 2023-24, College Scorecard, Niche
+const SAT_RANGES = {
+  mit:        [1520, 1580], stanford:    [1500, 1570], harvard:     [1490, 1580],
+  princeton:  [1500, 1570], yale:        [1490, 1560], columbia:    [1490, 1560],
+  upenn:      [1490, 1560], caltech:     [1530, 1580], duke:        [1490, 1560],
+  chicago:    [1500, 1570], cornell:     [1460, 1550], jhu:         [1480, 1560],
+  northwestern:[1460, 1540], rice:       [1470, 1560], cmu:         [1470, 1560],
+  notre_dame: [1410, 1530], vanderbilt:  [1480, 1560], georgetown:  [1410, 1530],
+  emory:      [1420, 1530], washu:       [1480, 1560], bu:          [1370, 1510],
+  northeastern:[1430, 1540],
+  uc_berkeley:[1320, 1520], ucla:        [1290, 1510], ucsd:        [1280, 1470],
+  uci:        [1200, 1420], ucsb:        [1240, 1450], ucd:         [1170, 1390],
+  ucsc:       [1120, 1340],
+  umich:      [1370, 1530], uva:         [1370, 1520], gatech:      [1390, 1540],
+  ut_austin:  [1250, 1460], unc:         [1320, 1490], uiuc:        [1250, 1470],
+  uw:         [1240, 1440], purdue:      [1190, 1420], vtech:       [1170, 1370],
+  usc:        [1380, 1530], nyu:         [1410, 1540],
+  uf:         [1270, 1430], fsu:         [1150, 1330], miami:       [1220, 1400],
+  florida_tech:[1090, 1300],
+  penn_state: [1150, 1350], ohio_state:  [1190, 1400], uw_madison:  [1280, 1440],
+  asu:        [1060, 1290], tamu:        [1140, 1370], umd:         [1310, 1470],
+  cu_boulder: [1120, 1330], nc_state:    [1200, 1380], clemson:     [1190, 1370],
+  rutgers:    [1170, 1380],
+};
+
+// ── CDS-sourced GPA bands: % of admits with 4.0, 3.75+, 3.5+, 3.25+, 3.0+ ──
+// Approximated from CDS Section C7 + Niche admitted-student profiles
+const GPA_BANDS = {
+  mit:         [0.97, 0.99, 1.0],  stanford:    [0.96, 0.99, 1.0],
+  harvard:     [0.95, 0.99, 1.0],  princeton:   [0.94, 0.98, 1.0],
+  yale:        [0.95, 0.98, 1.0],  columbia:    [0.93, 0.98, 1.0],
+  upenn:       [0.93, 0.98, 1.0],  caltech:     [0.98, 1.0,  1.0],
+  duke:        [0.94, 0.98, 1.0],  chicago:     [0.95, 0.99, 1.0],
+  cornell:     [0.88, 0.96, 0.99], jhu:         [0.90, 0.97, 0.99],
+  northwestern:[0.89, 0.96, 0.99], rice:        [0.89, 0.96, 0.99],
+  cmu:         [0.85, 0.95, 0.99], notre_dame:  [0.82, 0.94, 0.98],
+  vanderbilt:  [0.92, 0.98, 1.0],  georgetown:  [0.82, 0.94, 0.98],
+  emory:       [0.84, 0.94, 0.98], washu:       [0.92, 0.97, 0.99],
+  bu:          [0.72, 0.88, 0.95], northeastern:[0.84, 0.94, 0.98],
+  uc_berkeley: [0.88, 0.95, 0.98], ucla:        [0.90, 0.96, 0.99],
+  ucsd:        [0.78, 0.90, 0.96], uci:         [0.65, 0.82, 0.92],
+  ucsb:        [0.70, 0.86, 0.94], ucd:         [0.55, 0.74, 0.88],
+  ucsc:        [0.40, 0.60, 0.78],
+  umich:       [0.82, 0.93, 0.98], uva:         [0.80, 0.92, 0.97],
+  gatech:      [0.82, 0.94, 0.98], ut_austin:   [0.62, 0.80, 0.92],
+  unc:         [0.78, 0.90, 0.96], uiuc:        [0.58, 0.78, 0.90],
+  uw:          [0.55, 0.75, 0.88], purdue:      [0.48, 0.68, 0.84],
+  vtech:       [0.42, 0.62, 0.80],
+  usc:         [0.82, 0.94, 0.98], nyu:         [0.78, 0.90, 0.96],
+  uf:          [0.72, 0.86, 0.94], fsu:         [0.40, 0.62, 0.80],
+  miami:       [0.50, 0.72, 0.86], florida_tech:[0.25, 0.45, 0.65],
+  penn_state:  [0.42, 0.62, 0.80], ohio_state:  [0.48, 0.68, 0.84],
+  uw_madison:  [0.60, 0.78, 0.90], asu:         [0.20, 0.38, 0.58],
+  tamu:        [0.42, 0.62, 0.80], umd:         [0.62, 0.80, 0.92],
+  cu_boulder:  [0.30, 0.50, 0.70], nc_state:    [0.42, 0.62, 0.80],
+  clemson:     [0.40, 0.60, 0.78], rutgers:     [0.38, 0.58, 0.76],
+};
+
 export function admissionChance(college, student, inState = null) {
   const { gpa, weightedGPA, sat, act, extra = 50 } = student;
   if (!college.recGPA || !college.recSAT) return null;
@@ -696,92 +755,130 @@ export function admissionChance(college, student, inState = null) {
     : inState === false && college.acceptOOS ? college.acceptOOS
     : college.accept;
 
-  // ── Selectivity tier (drives all downstream calibration) ──
+  // ── Selectivity tier ──
   const tier =
-    baseRate < 0.04 ? 0 :  // ultra (Harvard, MIT, Caltech, Stanford)
-    baseRate < 0.08 ? 1 :  // hyper (Yale, Columbia, Duke, Princeton)
-    baseRate < 0.13 ? 2 :  // elite (Cornell, CMU, USC, Notre Dame)
-    baseRate < 0.25 ? 3 :  // selective (GT, UMich, UVA, UCLA)
-    baseRate < 0.50 ? 4 :  // competitive (UT Austin, UIUC, UCSD)
-    5;                      // accessible (Purdue, VTech, UCSC, FIT)
+    baseRate < 0.04 ? 0 :   // ultra (Harvard 3.2%, MIT 3.9%, Caltech 2.7%)
+    baseRate < 0.08 ? 1 :   // hyper (Yale 3.5%, Duke 5.0%, Princeton 5.6%)
+    baseRate < 0.15 ? 2 :   // elite (Cornell 7.2%, CMU 11.3%, Georgetown 12%)
+    baseRate < 0.30 ? 3 :   // selective (GT 16.3%, UMich 17.7%, UF 23%)
+    baseRate < 0.55 ? 4 :   // competitive (UIUC 43.6%, UW 44.2%, Penn St 54%)
+    5;                       // accessible (VTech 57%, TAMU 63%, ASU 88%)
 
-  // ── GPA z-score ──
-  // Admitted-student GPA spread tightens at more selective schools
-  const gpaSigma = [0.06, 0.08, 0.12, 0.18, 0.25, 0.35][tier];
-  const gpaZ = gpa ? (gpa - college.recGPA) / gpaSigma : 0;
-  // Asymmetric: being below hurts more than being above helps
-  const gpaScore = gpaZ >= 0
-    ? gpaZ * 0.8                         // diminishing returns above target
-    : gpaZ * (1.0 + Math.abs(gpaZ) * 0.15); // accelerating penalty below
+  // ── SAT percentile within admitted-student distribution ──
+  const range = SAT_RANGES[college.id] || [college.recSAT - 80, college.recSAT];
+  const sat25 = range[0];
+  const sat75 = range[1];
+  const satMid = (sat25 + sat75) / 2;
+  const satIQR = (sat75 - sat25) || 60;
+  // z-score relative to admitted-student distribution (IQR ≈ 1.35σ)
+  const satSigma = satIQR / 1.35;
+  const satZ = bestSAT ? (bestSAT - satMid) / satSigma : 0;
 
-  // ── SAT z-score ──
-  // Middle-50 SAT range is ~30pts at MIT, ~100pts at state schools
-  const satSigma = [30, 40, 50, 65, 80, 100][tier];
-  const satZ = bestSAT ? (bestSAT - college.recSAT) / satSigma : 0;
-  const satScore = satZ >= 0
-    ? satZ * 0.75
-    : satZ * (1.0 + Math.abs(satZ) * 0.12);
+  // Where does this student fall in the admitted pool? (0 = bottom, 1 = top)
+  // Using normal CDF approximation
+  const satPctl = normCDF(satZ);
 
-  // ── Course rigor (weighted GPA gap) ──
-  // AP/IB/honors load — selective schools weight this heavily
+  // ── GPA percentile within admitted-student distribution ──
+  // gpaBands = [% with 3.9+, % with 3.75+, % with 3.5+]
+  // We compute what fraction of admitted students are at or below this GPA
+  const gpaBands = GPA_BANDS[college.id] || [0.50, 0.70, 0.85];
+  let gpaPctl;
+  if (gpa >= 3.9) {
+    const belowGroup = 1 - gpaBands[0];
+    gpaPctl = belowGroup + gpaBands[0] * Math.min(1, (gpa - 3.9) / 0.1);
+  } else if (gpa >= 3.75) {
+    const belowGroup = 1 - gpaBands[1];
+    const inGroup = gpaBands[1] - gpaBands[0];
+    gpaPctl = belowGroup + inGroup * ((gpa - 3.75) / 0.15);
+  } else if (gpa >= 3.5) {
+    const belowGroup = 1 - gpaBands[2];
+    const inGroup = gpaBands[2] - gpaBands[1];
+    gpaPctl = belowGroup + inGroup * ((gpa - 3.5) / 0.25);
+  } else {
+    const belowAll = 1 - gpaBands[2];
+    const dropoff = [8, 6, 5, 3.5, 2.5, 1.8][tier];
+    gpaPctl = belowAll * Math.exp(-dropoff * (3.5 - gpa));
+  }
+  gpaPctl = Math.max(0, Math.min(1, gpaPctl));
+
+  // ── Course rigor signal (weighted - unweighted GPA gap) ──
   const rigorGap = weightedGPA ? weightedGPA - gpa : 0;
-  let rigorScore;
-  if      (rigorGap >= 0.7) rigorScore =  1.8;
-  else if (rigorGap >= 0.5) rigorScore =  1.2;
-  else if (rigorGap >= 0.35) rigorScore = 0.7;
-  else if (rigorGap >= 0.2) rigorScore =  0.3;
-  else if (rigorGap >= 0.1) rigorScore =  0.0;
-  else                       rigorScore = -0.5;
+  let rigorPctl;
+  if      (rigorGap >= 0.7) rigorPctl = 0.95;
+  else if (rigorGap >= 0.5) rigorPctl = 0.82;
+  else if (rigorGap >= 0.4) rigorPctl = 0.70;
+  else if (rigorGap >= 0.3) rigorPctl = 0.55;
+  else if (rigorGap >= 0.2) rigorPctl = 0.40;
+  else if (rigorGap >= 0.1) rigorPctl = 0.25;
+  else                       rigorPctl = 0.10;
 
   // ── Extracurriculars / holistic profile ──
-  // Normalized with non-linear scaling: outstanding (90+) matters more
-  const extraNorm = (extra - 50) / 50;
-  const extraScore = extraNorm >= 0
-    ? extraNorm * (1 + extraNorm * 0.8)   // outstanding ECs compound
-    : extraNorm * (1 + Math.abs(extraNorm) * 0.4);
+  // 0-100 scale: 50 = average applicant to this tier
+  const extraPctl = extra / 100;
 
-  // ── Factor weights by tier ──
-  // Ultra-selective = holistic (ECs, rigor dominate when everyone has 4.0/1560)
-  // Accessible = stats-driven
-  const weights = [
-    [0.22, 0.22, 0.18, 0.38],  // tier 0: ultra — ECs/rigor decisive
-    [0.26, 0.26, 0.15, 0.33],  // tier 1: hyper
+  // ── Stats gate: if academics are far below the admitted pool, ──
+  // ── ECs/rigor can't compensate (reader never gets that far)   ──
+  const statsPctl = (satPctl + gpaPctl) / 2;
+  const statsGate = statsPctl < 0.05
+    ? Math.max(0.15, statsPctl / 0.05)
+    : statsPctl < 0.15
+      ? 0.6 + 0.4 * ((statsPctl - 0.05) / 0.10)
+      : 1.0;
+  const effRigor = rigorPctl * statsGate;
+  const effExtra = extraPctl * statsGate;
+
+  // ── Composite academic index ──
+  const w = [
+    [0.25, 0.25, 0.15, 0.35],  // tier 0: ultra — holistic, stats are table stakes
+    [0.28, 0.28, 0.13, 0.31],  // tier 1: hyper
     [0.30, 0.30, 0.13, 0.27],  // tier 2: elite
-    [0.34, 0.34, 0.11, 0.21],  // tier 3: selective
-    [0.38, 0.36, 0.10, 0.16],  // tier 4: competitive
-    [0.40, 0.38, 0.08, 0.14],  // tier 5: accessible
+    [0.33, 0.33, 0.12, 0.22],  // tier 3: selective
+    [0.36, 0.36, 0.10, 0.18],  // tier 4: competitive
+    [0.38, 0.38, 0.08, 0.16],  // tier 5: accessible
   ][tier];
 
-  const composite =
-    gpaScore   * weights[0] +
-    satScore   * weights[1] +
-    rigorScore * weights[2] +
-    extraScore * weights[3];
+  const composite = satPctl * w[0] + gpaPctl * w[1] + effRigor * w[2] + effExtra * w[3];
 
-  // ── Probability calculation (hybrid curve) ──
-  const baseLogit = Math.log(baseRate / (1 - baseRate));
-  const steepness = [3.8, 3.2, 2.6, 2.1, 1.7, 1.3][tier];
-  const ceiling = [20, 35, 55, 82, 93, 98][tier];
-  const floor   = [ 1,  1,  2,  3,  5,  8][tier];
-  const floorRate = floor / 100;
+  // ── Convert composite to admission probability ──
+  // Ceiling/floor scale with the school's actual accept rate so the model
+  // produces realistic ranges for both 3% schools and 88% schools.
+  const br = baseRate * 100;
+  const ceilFactor = [0.15, 0.28, 0.48, 0.68, 0.85, 0.94][tier];
+  const floorFactor = [0.12, 0.14, 0.18, 0.22, 0.30, 0.50][tier];
+  const ceiling = Math.min(99, br + (100 - br) * ceilFactor);
+  const floor   = Math.max(1, br * floorFactor);
 
-  let prob;
-  if (composite >= 0) {
-    // Above target → logistic (diminishing returns toward ceiling)
-    const logit = baseLogit + composite * steepness;
-    prob = 1 / (1 + Math.exp(-logit));
+  // Steepness controls how sharply probability responds to composite
+  const k = [6.0, 5.2, 4.5, 3.8, 3.4, 3.2][tier];
 
-    // Yield protection: mid-tier schools reject obviously overqualified
-    if (tier >= 3 && tier <= 5 && composite > 3.0) {
-      prob *= 1 - Math.min(0.10, (composite - 3.0) * 0.025);
-    }
-  } else {
-    // Below target → linear interpolation (realistic non-zero chances)
-    // Depth controls how far below target before hitting floor
-    const depth = [2, 2.5, 3, 3, 3.5, 4][tier];
-    const t = Math.max(0, 1 + composite / depth);
-    prob = floorRate + t * (baseRate - floorRate);
+  const sigmoid = 1 / (1 + Math.exp(-k * (composite - 0.50)));
+  let prob = (floor + (ceiling - floor) * sigmoid) / 100;
+
+  // ── Yield protection for mid-tier schools ──
+  if (tier >= 3 && tier <= 4 && composite > 0.88) {
+    const yieldPenalty = Math.min(0.06, (composite - 0.88) * 0.4);
+    prob *= (1 - yieldPenalty);
   }
 
-  return Math.max(floor, Math.min(ceiling, Math.round(prob * 1000) / 10));
+  // ── In-state holistic boost for publics ──
+  if (inState === true && college.type === 'Public') {
+    prob = Math.min(ceiling / 100, prob * 1.05);
+  }
+
+  // ── Final clamp and format ──
+  const pct = Math.max(floor / 100, Math.min(ceiling / 100, prob)) * 100;
+  return Math.round(pct * 10) / 10;
+}
+
+// Standard normal CDF approximation (Abramowitz & Stegun)
+function normCDF(z) {
+  if (z < -6) return 0;
+  if (z >  6) return 1;
+  const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741;
+  const a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+  const sign = z < 0 ? -1 : 1;
+  const x = Math.abs(z) / Math.SQRT2;
+  const t = 1 / (1 + p * x);
+  const y = 1 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+  return 0.5 * (1 + sign * y);
 }
