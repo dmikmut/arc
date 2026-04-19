@@ -27,14 +27,69 @@ function Reveal({ children, className = '', delay = 0 }) {
   );
 }
 
-// Cost multiplier × typical state income tax rate for a representative
-// city in that tier. Source: BEA Regional Price Parities (2022) for cost,
-// state income tax tables (single filer top marginal) for state tax.
-const LOCATIONS = [
-  { id: 'rural',    label: 'Rural',      mult: 0.78, stateTax: 0.00, note: 'e.g. rural TX/FL/TN — no state income tax' },
-  { id: 'midsize',  label: 'Mid-size',   mult: 1.00, stateTax: 0.05, note: 'e.g. Austin, Denver, Raleigh' },
-  { id: 'metro',    label: 'Metro',      mult: 1.30, stateTax: 0.06, note: 'e.g. Chicago, Seattle, Boston' },
-  { id: 'hcol',     label: 'SF / NYC',   mult: 1.62, stateTax: 0.095, note: 'e.g. SF (CA 9.3%) or NYC (NY+NYC ~10%)' },
+// ── Per-state data ──
+// stateTax: effective top marginal rate for single filer ~$100k (2024 tables)
+// col: cost-of-living multiplier vs national avg (BEA Regional Price Parities 2022)
+// Source: Tax Foundation, BEA RPP, BLS CEWS
+const STATES = {
+  AL: { name: 'Alabama',        stateTax: 0.050, col: 0.87 },
+  AK: { name: 'Alaska',         stateTax: 0.000, col: 1.04 },
+  AZ: { name: 'Arizona',        stateTax: 0.025, col: 0.97 },
+  AR: { name: 'Arkansas',       stateTax: 0.044, col: 0.84 },
+  CA: { name: 'California',     stateTax: 0.093, col: 1.39 },
+  CO: { name: 'Colorado',       stateTax: 0.044, col: 1.05 },
+  CT: { name: 'Connecticut',    stateTax: 0.060, col: 1.12 },
+  DE: { name: 'Delaware',       stateTax: 0.066, col: 1.01 },
+  DC: { name: 'Washington DC',  stateTax: 0.085, col: 1.49 },
+  FL: { name: 'Florida',        stateTax: 0.000, col: 1.01 },
+  GA: { name: 'Georgia',        stateTax: 0.055, col: 0.92 },
+  HI: { name: 'Hawaii',         stateTax: 0.079, col: 1.36 },
+  ID: { name: 'Idaho',          stateTax: 0.058, col: 0.93 },
+  IL: { name: 'Illinois',       stateTax: 0.049, col: 0.96 },
+  IN: { name: 'Indiana',        stateTax: 0.031, col: 0.90 },
+  IA: { name: 'Iowa',           stateTax: 0.057, col: 0.88 },
+  KS: { name: 'Kansas',         stateTax: 0.057, col: 0.89 },
+  KY: { name: 'Kentucky',       stateTax: 0.040, col: 0.87 },
+  LA: { name: 'Louisiana',      stateTax: 0.043, col: 0.88 },
+  ME: { name: 'Maine',          stateTax: 0.071, col: 1.00 },
+  MD: { name: 'Maryland',       stateTax: 0.057, col: 1.12 },
+  MA: { name: 'Massachusetts',  stateTax: 0.090, col: 1.22 },
+  MI: { name: 'Michigan',       stateTax: 0.042, col: 0.90 },
+  MN: { name: 'Minnesota',      stateTax: 0.068, col: 0.97 },
+  MS: { name: 'Mississippi',    stateTax: 0.050, col: 0.83 },
+  MO: { name: 'Missouri',       stateTax: 0.048, col: 0.87 },
+  MT: { name: 'Montana',        stateTax: 0.059, col: 0.95 },
+  NE: { name: 'Nebraska',       stateTax: 0.058, col: 0.90 },
+  NV: { name: 'Nevada',         stateTax: 0.000, col: 0.99 },
+  NH: { name: 'New Hampshire',  stateTax: 0.000, col: 1.07 },
+  NJ: { name: 'New Jersey',     stateTax: 0.064, col: 1.18 },
+  NM: { name: 'New Mexico',     stateTax: 0.055, col: 0.92 },
+  NY: { name: 'New York',       stateTax: 0.085, col: 1.34 },
+  NC: { name: 'North Carolina', stateTax: 0.045, col: 0.91 },
+  ND: { name: 'North Dakota',   stateTax: 0.019, col: 0.90 },
+  OH: { name: 'Ohio',           stateTax: 0.035, col: 0.90 },
+  OK: { name: 'Oklahoma',       stateTax: 0.048, col: 0.86 },
+  OR: { name: 'Oregon',         stateTax: 0.090, col: 1.04 },
+  PA: { name: 'Pennsylvania',   stateTax: 0.031, col: 0.98 },
+  RI: { name: 'Rhode Island',   stateTax: 0.059, col: 1.03 },
+  SC: { name: 'South Carolina', stateTax: 0.064, col: 0.89 },
+  SD: { name: 'South Dakota',   stateTax: 0.000, col: 0.88 },
+  TN: { name: 'Tennessee',      stateTax: 0.000, col: 0.90 },
+  TX: { name: 'Texas',          stateTax: 0.000, col: 0.92 },
+  UT: { name: 'Utah',           stateTax: 0.047, col: 0.97 },
+  VT: { name: 'Vermont',        stateTax: 0.066, col: 1.03 },
+  VA: { name: 'Virginia',       stateTax: 0.058, col: 1.04 },
+  WA: { name: 'Washington',     stateTax: 0.000, col: 1.10 },
+  WV: { name: 'West Virginia',  stateTax: 0.052, col: 0.83 },
+  WI: { name: 'Wisconsin',      stateTax: 0.053, col: 0.92 },
+  WY: { name: 'Wyoming',        stateTax: 0.000, col: 0.91 },
+};
+
+// City-size multiplier on top of state COL
+const CITY_TIERS = [
+  { id: 'suburb',  label: 'Suburb / Rural', mult: 0.85, note: 'Small town or suburban area' },
+  { id: 'midcity', label: 'Mid-size City',  mult: 1.00, note: 'Average city in this state' },
+  { id: 'bigcity', label: 'Major City',     mult: 1.22, note: 'Largest metro in the state' },
 ];
 
 const NAV = [
@@ -268,7 +323,8 @@ function Simulator({ majorId, collegeId }) {
   const [workLife, setWorkLife] = useState(50);
   const [risk, setRisk] = useState(50);
   const [savingsRate, setSavingsRate] = useState(20);
-  const [locationId, setLocationId] = useState('midsize');
+  const [stateId, setStateId] = useState('TX');
+  const [cityTierId, setCityTierId] = useState('midcity');
   const [seed, setSeed] = useState(42);
   const [showMajorOnly, setShowMajorOnly] = useState(false);
 
@@ -280,7 +336,12 @@ function Simulator({ majorId, collegeId }) {
   }, [majorId]);
 
   const career = CAREERS.find((c) => c.id === careerId);
-  const location = LOCATIONS.find((l) => l.id === locationId);
+  const stateData = STATES[stateId];
+  const cityTier = CITY_TIERS.find((t) => t.id === cityTierId);
+  const location = {
+    mult: stateData.col * cityTier.mult,
+    stateTax: stateData.stateTax,
+  };
   const collegeDebt = college ? college.avgDebt : 0;
 
   const filteredCareers = showMajorOnly && majorCareerIds.length > 0
@@ -291,9 +352,9 @@ function Simulator({ majorId, collegeId }) {
     () => simulate(career, {
       ambition, workLife, risk, savingsRate,
       collegeDebt,
-      location: { mult: location.mult, stateTax: location.stateTax },
+      location,
     }, seed),
-    [career, ambition, workLife, risk, savingsRate, collegeDebt, location, seed]
+    [career, ambition, workLife, risk, savingsRate, collegeDebt, location.mult, location.stateTax, seed]
   );
 
   const { series, events, summary } = sim;
@@ -387,25 +448,46 @@ function Simulator({ majorId, collegeId }) {
 
             {/* Location */}
             <div>
-              <h3 className="text-xs uppercase tracking-[0.2em] text-neutral-400 mb-4">Location</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/10">
-                {LOCATIONS.map((l) => (
-                  <button
-                    key={l.id}
-                    onClick={() => setLocationId(l.id)}
-                    className={`py-3 text-[11px] uppercase tracking-wider transition ${
-                      locationId === l.id ? 'bg-white text-black' : 'bg-black text-neutral-400 hover:text-white'
-                    }`}
+              <h3 className="text-xs uppercase tracking-[0.2em] text-neutral-400 mb-4">Location after graduation</h3>
+              <div className="flex flex-wrap gap-3 items-end mb-4">
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-neutral-500 block mb-1.5">State</label>
+                  <select
+                    value={stateId}
+                    onChange={(e) => setStateId(e.target.value)}
+                    className="bg-transparent border hairline px-3 py-2 text-sm text-white outline-none focus:border-white/30 transition appearance-none cursor-pointer pr-8"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
                   >
-                    {l.label}
-                  </button>
-                ))}
+                    {Object.entries(STATES).map(([id, s]) => (
+                      <option key={id} value={id}>{s.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <label className="text-[10px] uppercase tracking-wider text-neutral-500 block mb-1.5">City size</label>
+                  <div className="grid grid-cols-3 gap-px bg-white/10">
+                    {CITY_TIERS.map((t) => (
+                      <button
+                        key={t.id}
+                        onClick={() => setCityTierId(t.id)}
+                        className={`py-2 text-[10px] uppercase tracking-wider transition ${
+                          cityTierId === t.id ? 'bg-white text-black' : 'bg-black text-neutral-400 hover:text-white'
+                        }`}
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <div className="text-[11px] text-neutral-500 mt-3 leading-relaxed">
-                {location.note}
+              <div className="text-[11px] text-neutral-500 leading-relaxed">
+                {stateData.name} · {cityTier.note}
                 <span className="block text-neutral-400 mt-1 mono">
-                  Cost {location.mult.toFixed(2)}× · State tax {(location.stateTax * 100).toFixed(1)}%
+                  Cost of living {location.mult.toFixed(2)}× · State income tax {stateData.stateTax === 0 ? 'none' : (stateData.stateTax * 100).toFixed(1) + '%'}
                 </span>
+                {stateData.stateTax === 0 && (
+                  <span className="text-emerald-400 text-[10px]">No state income tax</span>
+                )}
               </div>
             </div>
 
@@ -444,7 +526,7 @@ function Simulator({ majorId, collegeId }) {
               </div>
               <div className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight">{verdict}.</div>
               <div className="text-sm text-neutral-400 mt-3">
-                As a <span className="text-white">{career.name.toLowerCase()}</span> at the <span className="text-white">{summary.percentile}th percentile</span> in {location.label.toLowerCase()} · {events.length} major events
+                As a <span className="text-white">{career.name.toLowerCase()}</span> at the <span className="text-white">{summary.percentile}th percentile</span> in <span className="text-white">{stateData.name}</span> ({cityTier.label.toLowerCase()}) · {events.length} major events
                 {college && (
                   <span> · <span className="text-white">{college.name}</span> grad ({fmtMoney(collegeDebt)} debt)</span>
                 )}
@@ -556,10 +638,10 @@ function Methodology() {
                 <span className="text-neutral-300">FICA:</span> 6.2% SS (capped at $168,600) + 1.45% Medicare + 0.9% additional Medicare over $200k.
               </li>
               <li>
-                <span className="text-neutral-300">State tax:</span> representative flat rates by city tier (0% no-income-tax states → 9.5% SF/NYC).
+                <span className="text-neutral-300">State tax:</span> real per-state effective rates for all 50 states + DC (Tax Foundation 2024). Zero for TX, FL, WA, TN, NV, WY, SD, AK, NH.
               </li>
               <li>
-                <span className="text-neutral-300">Cost of living:</span> BLS Consumer Expenditure Survey baseline (~$42k), scaled by BEA Regional Price Parities.
+                <span className="text-neutral-300">Cost of living:</span> BLS Consumer Expenditure Survey baseline (~$42k), scaled by BEA Regional Price Parities per state × city-size multiplier.
               </li>
               <li>
                 <span className="text-neutral-300">Investment return:</span> 5% real (S&P 500 ~7% nominal − 3% inflation).

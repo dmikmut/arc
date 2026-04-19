@@ -56,8 +56,14 @@ function ficaTax(grossIncome) {
 }
 
 function stateTax(grossIncome, stateRate) {
+  if (stateRate === 0) return 0;
   const taxable = Math.max(0, grossIncome - STD_DEDUCTION);
-  return taxable * stateRate;
+  // Most states have progressive brackets, but the rate passed in is the
+  // effective top marginal rate. We approximate a progressive structure:
+  // first $20k at 60% of the rate, next $60k at 85%, remainder at full rate.
+  if (taxable <= 20000) return taxable * stateRate * 0.60;
+  if (taxable <= 80000) return 20000 * stateRate * 0.60 + (taxable - 20000) * stateRate * 0.85;
+  return 20000 * stateRate * 0.60 + 60000 * stateRate * 0.85 + (taxable - 80000) * stateRate;
 }
 
 export function totalTax(gross, stateRate) {
