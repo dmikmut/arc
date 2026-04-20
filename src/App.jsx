@@ -213,8 +213,8 @@ function Home() {
         <Reveal delay={1200}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5">
             {[
-              { n: '54', l: 'Colleges' },
-              { n: '42', l: 'Careers' },
+              { n: '60', l: 'Colleges' },
+              { n: '43', l: 'Careers' },
               { n: '35', l: 'Years modeled' },
               { n: '0', l: 'Backend calls' },
             ].map((s) => (
@@ -238,8 +238,8 @@ function Home() {
 
 function About() {
   const features = [
-    { n: '01', t: 'Start at college', d: '54 real campuses with acceptance rates, recommended GPA/SAT, cost, debt, and a happiness + stress forecast for your four years on campus.' },
-    { n: '02', t: 'Real careers, real tradeoffs', d: '42 career paths with BLS-sourced salary curves, stress baselines, creativity, purpose, and job security.' },
+    { n: '01', t: 'Start at college', d: '60 campuses — universities and community colleges — with acceptance rates, recommended GPA/SAT, cost, debt, and a happiness + stress forecast.' },
+    { n: '02', t: 'Real careers, real tradeoffs', d: '43 career paths with BLS-sourced salary curves, stress baselines, creativity, purpose, and job security.' },
     { n: '03', t: 'Your preferences matter', d: 'Ambition, risk tolerance, work-life balance, savings rate, and location. Each dial measurably shifts your trajectory.' },
     { n: '04', t: 'Frontend-only', d: 'No backend. No sign-up. Nothing leaves your browser. The simulation is pure math running live on every render.' },
   ];
@@ -274,7 +274,7 @@ function About() {
 
 function HowItWorks() {
   const steps = [
-    { n: '01', t: 'Pick a college', d: 'Choose a major, then browse 54 campuses ranked by program fit. See the GPA/SAT you\'d need, the cost, and how happy (or stressed) you\'d be for four years.' },
+    { n: '01', t: 'Pick a college', d: 'Choose a major, then browse 60 campuses — from Ivy League to community colleges — ranked by program fit. See the GPA/SAT, cost, and vibe.' },
     { n: '02', t: 'Choose a career', d: 'Your major filters to matching careers. Pick one, tune ambition, savings, risk, and location. The sim recalculates on every frame.' },
     { n: '03', t: 'Read the outcome', d: 'Charts show income, net worth, happiness, stress, and skill over 35 years — starting from your college debt. Life events mark the turning points.' },
   ];

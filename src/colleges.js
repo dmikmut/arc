@@ -41,12 +41,12 @@ export const MAJORS = [
   {
     id: 'bme', name: 'Biomedical Engineering', icon: '🧬',
     description: 'Medical devices, imaging, prosthetics, biotech.',
-    careers: ['biomedical_engineer', 'doctor', 'researcher'],
+    careers: ['biomedical_engineer', 'doctor', 'researcher', 'surgeon'],
   },
   {
     id: 'bio', name: 'Biology / Pre-Med', icon: '🧪',
     description: 'Life sciences, pre-med track, research foundation.',
-    careers: ['doctor', 'researcher', 'biomedical_engineer', 'veterinarian', 'physical_therapist'],
+    careers: ['doctor', 'surgeon', 'researcher', 'biomedical_engineer', 'veterinarian', 'physical_therapist'],
   },
   {
     id: 'nursing', name: 'Nursing (BSN)', icon: '🩺',
@@ -106,12 +106,12 @@ export const MAJORS = [
   {
     id: 'chem', name: 'Chemistry', icon: '🧫',
     description: 'Reactions, synthesis, analysis. Gateway to pharma, materials, medicine.',
-    careers: ['pharmacist', 'researcher', 'chemical_engineer', 'veterinarian'],
+    careers: ['pharmacist', 'researcher', 'chemical_engineer', 'veterinarian', 'surgeon'],
   },
   {
     id: 'neuro', name: 'Neuroscience', icon: '🧠',
     description: 'Brain, nervous system, cognition. Med school or research pipeline.',
-    careers: ['doctor', 'psychologist', 'researcher', 'physician_assistant'],
+    careers: ['doctor', 'surgeon', 'psychologist', 'researcher', 'physician_assistant'],
   },
   {
     id: 'arch', name: 'Architecture', icon: '🏛️',
@@ -555,6 +555,49 @@ export const COLLEGES = [
     programs: { cs: 72, elec_eng: 72, finance: 72, bio: 70, chem: 70, psych: 68, accounting: 72, marketing: 65, cyber: 68 },
     vibe: { academic: 84, social: 80, outdoors: 55, weather: 52 },
     motto: 'NJ\'s flagship. NYC access + pharma industry pipeline. Rising fast in CS rankings.' },
+
+  // ===== Community Colleges =====
+  { id: 'dvc', name: 'Diablo Valley College', city: 'Pleasant Hill, CA', type: 'Public', region: 'West',
+    cost: 18000, avgAid: 4000, avgDebt: 4800, accept: 0.99, acceptIS: 0.99, acceptOOS: 0.99, size: 19500, gradRate: 38,
+    recGPA: 2.00, recSAT: 900,
+    programs: { cs: 45, bio: 42, psych: 40, math: 38, comms: 38, arts: 35, finance: 35, accounting: 35, marketing: 32 },
+    vibe: { academic: 55, social: 45, outdoors: 72, weather: 88 },
+    motto: 'Top CC transfer pipeline to UC Berkeley and UC Davis. Strong STEM and business programs. Contra Costa County.' },
+
+  { id: 'smc', name: 'Santa Monica College', city: 'Santa Monica, CA', type: 'Public', region: 'West',
+    cost: 16000, avgAid: 3500, avgDebt: 4200, accept: 0.99, acceptIS: 0.99, acceptOOS: 0.99, size: 28000, gradRate: 35,
+    recGPA: 2.00, recSAT: 900,
+    programs: { film: 52, cs: 42, bio: 40, arts: 48, comms: 42, psych: 38, math: 35, accounting: 32 },
+    vibe: { academic: 52, social: 55, outdoors: 90, weather: 97 },
+    motto: '#1 CC feeder to UCLA. Beach-adjacent campus, strong film/media and arts programs.' },
+
+  { id: 'deanza', name: 'De Anza College', city: 'Cupertino, CA', type: 'Public', region: 'West',
+    cost: 16000, avgAid: 3500, avgDebt: 4500, accept: 0.99, acceptIS: 0.99, acceptOOS: 0.99, size: 21000, gradRate: 40,
+    recGPA: 2.00, recSAT: 900,
+    programs: { cs: 48, bio: 40, math: 40, accounting: 38, finance: 35, psych: 35, arts: 32, film: 32 },
+    vibe: { academic: 58, social: 42, outdoors: 75, weather: 92 },
+    motto: 'Silicon Valley CC. Top transfer rates to UC Berkeley and UC Santa Cruz. Strong STEM.' },
+
+  { id: 'mdc', name: 'Miami Dade College', city: 'Miami, FL', type: 'Public', region: 'South',
+    cost: 14000, avgAid: 4000, avgDebt: 5200, accept: 0.99, acceptIS: 0.99, acceptOOS: 0.99, size: 52000, gradRate: 32,
+    recGPA: 2.00, recSAT: 900,
+    programs: { nursing: 45, bio: 38, cs: 35, film: 40, comms: 38, arts: 42, accounting: 35, marketing: 32, psych: 32 },
+    vibe: { academic: 48, social: 60, outdoors: 82, weather: 92 },
+    motto: 'Largest CC in America. Diverse, affordable, strong nursing and arts programs. Gateway to FIU and UF.' },
+
+  { id: 'nova', name: 'Northern Virginia CC (NOVA)', city: 'Annandale, VA', type: 'Public', region: 'Northeast',
+    cost: 16000, avgAid: 3500, avgDebt: 4800, accept: 0.99, acceptIS: 0.99, acceptOOS: 0.99, size: 51000, gradRate: 30,
+    recGPA: 2.00, recSAT: 900,
+    programs: { cs: 42, cyber: 45, bio: 38, accounting: 38, nursing: 40, psych: 35, finance: 35, comms: 32 },
+    vibe: { academic: 52, social: 40, outdoors: 60, weather: 62 },
+    motto: 'Largest CC in Virginia. Strong cybersecurity program. Top feeder to George Mason and UVA.' },
+
+  { id: 'hcc', name: 'Houston CC', city: 'Houston, TX', type: 'Public', region: 'South',
+    cost: 12000, avgAid: 3000, avgDebt: 4000, accept: 0.99, acceptIS: 0.99, acceptOOS: 0.99, size: 57000, gradRate: 25,
+    recGPA: 2.00, recSAT: 900,
+    programs: { nursing: 42, bio: 35, cs: 35, accounting: 35, mech_eng: 30, psych: 32, marketing: 30 },
+    vibe: { academic: 45, social: 50, outdoors: 55, weather: 62 },
+    motto: 'One of the most affordable CCs in Texas. Feeds into UH, UT Austin, and Texas A&M.' },
 ];
 
 // ==============================================================
@@ -708,6 +751,8 @@ const SAT_RANGES = {
   asu:        [1060, 1290], tamu:        [1140, 1370], umd:         [1310, 1470],
   cu_boulder: [1120, 1330], nc_state:    [1200, 1380], clemson:     [1190, 1370],
   rutgers:    [1170, 1380],
+  dvc:        [750, 1050],  smc:         [750, 1050],  deanza:     [780, 1080],
+  mdc:        [720, 1020],  nova:        [750, 1050],  hcc:        [700, 1000],
 };
 
 // ── CDS-sourced GPA bands: % of admits with 4.0, 3.75+, 3.5+, 3.25+, 3.0+ ──
@@ -741,6 +786,9 @@ const GPA_BANDS = {
   tamu:        [0.42, 0.62, 0.80], umd:         [0.62, 0.80, 0.92],
   cu_boulder:  [0.30, 0.50, 0.70], nc_state:    [0.42, 0.62, 0.80],
   clemson:     [0.40, 0.60, 0.78], rutgers:     [0.38, 0.58, 0.76],
+  dvc:         [0.05, 0.12, 0.25], smc:        [0.05, 0.12, 0.24],
+  deanza:      [0.06, 0.14, 0.28], mdc:        [0.04, 0.10, 0.22],
+  nova:        [0.05, 0.12, 0.25], hcc:        [0.04, 0.10, 0.20],
 };
 
 export function admissionChance(college, student, inState = null) {
@@ -762,7 +810,8 @@ export function admissionChance(college, student, inState = null) {
     baseRate < 0.15 ? 2 :   // elite (Cornell 7.2%, CMU 11.3%, Georgetown 12%)
     baseRate < 0.30 ? 3 :   // selective (GT 16.3%, UMich 17.7%, UF 23%)
     baseRate < 0.55 ? 4 :   // competitive (UIUC 43.6%, UW 44.2%, Penn St 54%)
-    5;                       // accessible (VTech 57%, TAMU 63%, ASU 88%)
+    baseRate < 0.90 ? 5 :   // accessible (VTech 57%, TAMU 63%, ASU 88%)
+    6;                       // open admission (community colleges, 90%+)
 
   // ── SAT percentile within admitted-student distribution ──
   const range = SAT_RANGES[college.id] || [college.recSAT - 80, college.recSAT];
@@ -796,7 +845,7 @@ export function admissionChance(college, student, inState = null) {
     gpaPctl = belowGroup + inGroup * ((gpa - 3.5) / 0.25);
   } else {
     const belowAll = 1 - gpaBands[2];
-    const dropoff = [8, 6, 5, 3.5, 2.5, 1.8][tier];
+    const dropoff = [8, 6, 5, 3.5, 2.5, 1.8, 1.0][tier];
     gpaPctl = belowAll * Math.exp(-dropoff * (3.5 - gpa));
   }
   gpaPctl = Math.max(0, Math.min(1, gpaPctl));
@@ -835,6 +884,7 @@ export function admissionChance(college, student, inState = null) {
     [0.33, 0.33, 0.12, 0.22],  // tier 3: selective
     [0.36, 0.36, 0.10, 0.18],  // tier 4: competitive
     [0.38, 0.38, 0.08, 0.16],  // tier 5: accessible
+    [0.42, 0.42, 0.06, 0.10],  // tier 6: open admission — stats-only
   ][tier];
 
   const composite = satPctl * w[0] + gpaPctl * w[1] + effRigor * w[2] + effExtra * w[3];
@@ -843,13 +893,13 @@ export function admissionChance(college, student, inState = null) {
   // Ceiling/floor scale with the school's actual accept rate so the model
   // produces realistic ranges for both 3% schools and 88% schools.
   const br = baseRate * 100;
-  const ceilFactor = [0.15, 0.28, 0.48, 0.68, 0.85, 0.94][tier];
-  const floorFactor = [0.12, 0.14, 0.18, 0.22, 0.30, 0.50][tier];
+  const ceilFactor = [0.15, 0.28, 0.48, 0.68, 0.85, 0.94, 0.99][tier];
+  const floorFactor = [0.12, 0.14, 0.18, 0.22, 0.30, 0.50, 0.92][tier];
   const ceiling = Math.min(99, br + (100 - br) * ceilFactor);
   const floor   = Math.max(1, br * floorFactor);
 
   // Steepness controls how sharply probability responds to composite
-  const k = [6.0, 5.2, 4.5, 3.8, 3.4, 3.2][tier];
+  const k = [6.0, 5.2, 4.5, 3.8, 3.4, 3.2, 2.0][tier];
 
   const sigmoid = 1 / (1 + Math.exp(-k * (composite - 0.50)));
   let prob = (floor + (ceiling - floor) * sigmoid) / 100;

@@ -570,6 +570,20 @@ export const CAREERS = [
     majors: ['Civil Engineering', 'Architecture', 'Mechanical Engineering'],
     blsCode: '11-9021',
   },
+  {
+    id: 'surgeon',
+    category: 'medicine',
+    name: 'Surgeon',
+    icon: '🔪',
+    tagline: 'Cut, repair, save lives',
+    salary: { start: 65000, mid: 350000, peak: 500000, late: 450000 },
+    dispersion: 0.7,
+    baseStress: 92, workHours: 65, prestige: 99, jobSecurity: 95, creativity: 45, purpose: 98,
+    delayedStart: 13, trainingWage: 68000, trainingDebt: 250000,
+    description: 'Among the highest-paid and highest-stress careers. 4 years med school + 5-7 year surgical residency + possible fellowship. Neurosurgeons and cardiac surgeons earn the most.',
+    majors: ['Biology (pre-med)', 'Biochemistry', 'Neuroscience', 'Chemistry'],
+    blsCode: '29-1248',
+  },
 ];
 
 // Life events impact in real (today's) dollars.
