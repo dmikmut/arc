@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { CAREERS, CATEGORIES } from './careers';
 import { MAJORS, COLLEGES } from './colleges';
 import { simulate } from './simulation';
@@ -23,6 +23,72 @@ function Reveal({ children, className = '', delay = 0 }) {
   return (
     <div ref={ref} className={`reveal ${shown ? 'shown' : ''} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
       {children}
+    </div>
+  );
+}
+
+function SimStateSelect({ value, onChange, states }) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const ref = useRef(null);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const entries = Object.entries(states);
+  const filtered = query.trim()
+    ? entries.filter(([code, s]) =>
+        code.toLowerCase().includes(query.toLowerCase()) ||
+        s.name.toLowerCase().includes(query.toLowerCase())
+      )
+    : entries;
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => { setOpen(!open); setTimeout(() => inputRef.current?.focus(), 50); }}
+        className="bg-transparent border hairline px-3 py-2 text-sm text-white outline-none focus:border-white/30 transition flex items-center gap-2 min-w-[180px]"
+      >
+        <span>{states[value]?.name || value}</span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#737373" strokeWidth="2" className="ml-auto shrink-0">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+      {open && (
+        <div className="absolute z-50 top-full left-0 mt-1 w-64 bg-neutral-900 border border-white/10 shadow-xl max-h-64 flex flex-col">
+          <div className="p-2 border-b border-white/10">
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Type to search..."
+              className="w-full bg-transparent text-sm text-white placeholder-neutral-600 outline-none px-2 py-1.5"
+            />
+          </div>
+          <div className="overflow-y-auto flex-1">
+            {filtered.map(([code, s]) => (
+              <button
+                key={code}
+                onClick={() => { onChange(code); setQuery(''); setOpen(false); }}
+                className={`w-full text-left px-4 py-2 text-sm transition ${
+                  code === value ? 'bg-white/10 text-white' : 'text-neutral-300 hover:bg-white/5'
+                }`}
+              >
+                <span className="mono text-neutral-500 mr-2">{code}</span>{s.name}
+              </button>
+            ))}
+            {filtered.length === 0 && (
+              <div className="px-4 py-3 text-sm text-neutral-600">No match</div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -452,16 +518,7 @@ function Simulator({ majorId, collegeId }) {
               <div className="flex flex-wrap gap-3 items-end mb-4">
                 <div>
                   <label className="text-[10px] uppercase tracking-wider text-neutral-500 block mb-1.5">State</label>
-                  <select
-                    value={stateId}
-                    onChange={(e) => setStateId(e.target.value)}
-                    className="bg-transparent border hairline px-3 py-2 text-sm text-white outline-none focus:border-white/30 transition appearance-none cursor-pointer pr-8"
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
-                  >
-                    {Object.entries(STATES).map(([id, s]) => (
-                      <option key={id} value={id}>{s.name}</option>
-                    ))}
-                  </select>
+                  <SimStateSelect value={stateId} onChange={setStateId} states={STATES} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <label className="text-[10px] uppercase tracking-wider text-neutral-500 block mb-1.5">City size</label>

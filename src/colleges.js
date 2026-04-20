@@ -729,7 +729,7 @@ export function estimateRecWGPA(recGPA) {
 
 // ── CDS-sourced SAT middle-50 ranges (25th, 75th percentile) ──
 // Source: Common Data Set 2023-24, College Scorecard, Niche
-const SAT_RANGES = {
+export const SAT_RANGES = {
   mit:        [1520, 1580], stanford:    [1500, 1570], harvard:     [1490, 1580],
   princeton:  [1500, 1570], yale:        [1490, 1560], columbia:    [1490, 1560],
   upenn:      [1490, 1560], caltech:     [1530, 1580], duke:        [1490, 1560],

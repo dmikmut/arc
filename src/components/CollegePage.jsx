@@ -1,15 +1,97 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import {
   RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer,
 } from 'recharts';
-import { MAJORS, COLLEGES, collegesForMajor, majorFitScore, collegeExperience, admissionChance, actToSAT, satToACT, estimateRecWGPA, getCollegeState } from '../colleges';
+import { MAJORS, COLLEGES, collegesForMajor, majorFitScore, collegeExperience, admissionChance, actToSAT, satToACT, estimateRecWGPA, getCollegeState, SAT_RANGES } from '../colleges';
 import { CAREERS } from '../careers';
 
-const US_STATES = [
-  'AL','AK','AZ','AR','CA','CO','CT','DC','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY',
-  'LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH',
-  'OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY',
-];
+const US_STATES_MAP = {
+  AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',
+  CT:'Connecticut',DC:'Washington DC',DE:'Delaware',FL:'Florida',GA:'Georgia',HI:'Hawaii',
+  ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',
+  ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',
+  MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',
+  NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',
+  OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',
+  TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',
+  WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming',
+};
+const US_STATES = Object.keys(US_STATES_MAP);
+
+function SearchableStateSelect({ value, onChange, className }) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const ref = useRef(null);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const filtered = query.trim()
+    ? Object.entries(US_STATES_MAP).filter(([code, name]) =>
+        code.toLowerCase().includes(query.toLowerCase()) ||
+        name.toLowerCase().includes(query.toLowerCase())
+      )
+    : Object.entries(US_STATES_MAP);
+
+  return (
+    <div ref={ref} className={`relative ${className || ''}`}>
+      <button
+        type="button"
+        onClick={() => { setOpen(!open); setTimeout(() => inputRef.current?.focus(), 50); }}
+        className="w-full bg-transparent border hairline px-3 py-1.5 text-sm text-left text-white outline-none focus:border-white/30 transition flex items-center justify-between gap-2"
+      >
+        <span className={value ? 'text-white' : 'text-neutral-500'}>
+          {value ? `${value} — ${US_STATES_MAP[value]}` : '— Select —'}
+        </span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#737373" strokeWidth="2">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+      {open && (
+        <div className="absolute z-50 top-full left-0 mt-1 w-64 bg-neutral-900 border border-white/10 shadow-xl max-h-64 flex flex-col">
+          <div className="p-2 border-b border-white/10">
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Type to search..."
+              className="w-full bg-transparent text-sm text-white placeholder-neutral-600 outline-none px-2 py-1.5"
+            />
+          </div>
+          <div className="overflow-y-auto flex-1">
+            {value && (
+              <button
+                onClick={() => { onChange(''); setQuery(''); setOpen(false); }}
+                className="w-full text-left px-4 py-2 text-sm text-neutral-500 hover:bg-white/5 transition"
+              >
+                — Clear —
+              </button>
+            )}
+            {filtered.map(([code, name]) => (
+              <button
+                key={code}
+                onClick={() => { onChange(code); setQuery(''); setOpen(false); }}
+                className={`w-full text-left px-4 py-2 text-sm transition ${
+                  code === value ? 'bg-white/10 text-white' : 'text-neutral-300 hover:bg-white/5'
+                }`}
+              >
+                <span className="mono text-neutral-500 mr-2">{code}</span>{name}
+              </button>
+            ))}
+            {filtered.length === 0 && (
+              <div className="px-4 py-3 text-sm text-neutral-600">No states match "{query}"</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 const fmtMoney = (n) => {
   if (Math.abs(n) >= 1e6) return `$${(n / 1e6).toFixed(2)}M`;
@@ -22,6 +104,7 @@ const difficulty = (accept) => {
   if (accept < 0.12) return { label: 'Extremely selective', tone: 'text-amber-300' };
   if (accept < 0.25) return { label: 'Highly selective', tone: 'text-yellow-200' };
   if (accept < 0.5)  return { label: 'Selective', tone: 'text-emerald-300' };
+  if (accept >= 0.90) return { label: 'Open admission', tone: 'text-sky-300' };
   return { label: 'Accessible', tone: 'text-sky-300' };
 };
 
@@ -228,8 +311,60 @@ function StatInput({ label, value, onChange, min, max, step, sliderMin, sliderMa
   );
 }
 
+function getRecommendations(college, student, testMode, chance) {
+  const tips = [];
+  if (chance >= 80) {
+    tips.push({ icon: '✅', text: 'You\'re a strong match — focus on a standout essay and demonstrated interest.' });
+    return tips;
+  }
+  if (chance >= 95) return [{ icon: '🎯', text: 'You\'re well above this school\'s profile — consider it a safety school.' }];
+
+  const satRange = SAT_RANGES[college.id];
+  const recGPA = college.recGPA || 3.5;
+
+  if (student.gpa < recGPA - 0.1) {
+    const target = Math.min(4.0, recGPA + 0.1);
+    tips.push({ icon: '📚', text: `Raise your GPA to ${target.toFixed(2)}+. Take AP/honors classes to boost your weighted GPA — admissions values upward trends.` });
+  } else if (student.gpa < recGPA + 0.1) {
+    tips.push({ icon: '📈', text: `Your GPA is close to the recommended ${recGPA.toFixed(2)}. Adding AP/IB courses will strengthen your weighted GPA and show rigor.` });
+  }
+
+  if (testMode !== 'act' && satRange) {
+    const p75 = satRange[1];
+    if (student.sat < satRange[0]) {
+      tips.push({ icon: '✏️', text: `Your SAT (${student.sat}) is below the 25th percentile (${satRange[0]}). Target ${satRange[0]}+ with focused practice in your weaker section.` });
+    } else if (student.sat < p75) {
+      tips.push({ icon: '📝', text: `Your SAT (${student.sat}) is in range but below the 75th percentile (${p75}). Scoring ${p75}+ would put you above most admitted students.` });
+    }
+  }
+
+  if (student.extra < 60) {
+    tips.push({ icon: '🏆', text: 'Boost extracurriculars — aim for depth over breadth. Leadership roles, competitions, and sustained commitment matter more than a long list.' });
+  }
+  if (student.extra < 40) {
+    tips.push({ icon: '🔬', text: 'Consider research, internships, or passion projects. Colleges want to see initiative and genuine interest beyond academics.' });
+  }
+
+  if (college.accept < 0.15 && chance < 30) {
+    tips.push({ icon: '📄', text: 'For highly selective schools, your essays and letters of rec carry enormous weight. Start early, be authentic, show "why this school."' });
+  }
+
+  if (college.accept < 0.08) {
+    tips.push({ icon: '🎲', text: 'This is a reach for almost everyone. Apply, but have strong match and safety schools lined up too.' });
+  }
+
+  if (tips.length === 0) {
+    tips.push({ icon: '👍', text: 'Your stats are competitive. Focus on a compelling personal essay and strong teacher recommendations.' });
+  }
+
+  return tips;
+}
+
 export default function CollegePage({ majorId, setMajorId, collegeId, setCollegeId }) {
   const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('fit');
+  const [filterType, setFilterType] = useState('all');
+  const [filterDifficulty, setFilterDifficulty] = useState('all');
   const [studentGPA, setStudentGPA] = useState(3.7);
   const [studentWGPA, setStudentWGPA] = useState(4.2);
   const [studentSAT, setStudentSAT] = useState(1400);
@@ -253,12 +388,41 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
   const rankedColleges = useMemo(() => collegesForMajor(majorId), [majorId]);
 
   const displayedColleges = useMemo(() => {
-    if (!search.trim()) return rankedColleges;
-    const q = search.toLowerCase();
-    return rankedColleges.filter((c) =>
-      c.name.toLowerCase().includes(q) || c.city.toLowerCase().includes(q)
-    );
-  }, [rankedColleges, search]);
+    let list = rankedColleges;
+
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter((c) =>
+        c.name.toLowerCase().includes(q) || c.city.toLowerCase().includes(q)
+      );
+    }
+
+    if (filterType !== 'all') {
+      list = list.filter((c) => filterType === 'public' ? c.type === 'Public' : c.type === 'Private');
+    }
+
+    if (filterDifficulty !== 'all') {
+      list = list.filter((c) => {
+        if (filterDifficulty === 'reach') return c.accept < 0.15;
+        if (filterDifficulty === 'target') return c.accept >= 0.15 && c.accept < 0.55;
+        if (filterDifficulty === 'safety') return c.accept >= 0.55;
+        return true;
+      });
+    }
+
+    if (sortBy !== 'fit') {
+      list = [...list].sort((a, b) => {
+        if (sortBy === 'chance') {
+          return admissionChance(b, student) - admissionChance(a, student);
+        }
+        if (sortBy === 'cost') return a.avgDebt - b.avgDebt;
+        if (sortBy === 'accept') return b.accept - a.accept;
+        return 0;
+      });
+    }
+
+    return list;
+  }, [rankedColleges, search, filterType, filterDifficulty, sortBy, student.gpa, student.sat, student.act, student.extra]);
 
   const college = COLLEGES.find((c) => c.id === collegeId) || rankedColleges[0];
 
@@ -349,15 +513,7 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
             <div className="flex items-center gap-4 mb-5 flex-wrap">
               <div>
                 <label className="text-[11px] uppercase tracking-wider text-neutral-400 block mb-1.5">Your state</label>
-                <select
-                  value={studentState}
-                  onChange={(e) => setStudentState(e.target.value)}
-                  className="bg-transparent border hairline px-3 py-1.5 text-sm text-white outline-none focus:border-white/30 transition appearance-none cursor-pointer pr-8"
-                  style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
-                >
-                  <option value="">— Select —</option>
-                  {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
+                <SearchableStateSelect value={studentState} onChange={setStudentState} />
               </div>
               {studentState && (
                 <p className="text-[10px] text-neutral-600 leading-relaxed">
@@ -454,7 +610,7 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
               </h3>
               <span className="text-[11px] text-neutral-500 mono">{displayedColleges.length} shown</span>
             </div>
-            <div className="relative mb-4">
+            <div className="relative mb-3">
               <input
                 type="text"
                 value={search}
@@ -471,6 +627,36 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
                 </button>
               )}
             </div>
+
+            {/* Filters & Sort */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              <div className="flex gap-px bg-white/5 text-[10px]">
+                {[['all', 'All'], ['public', 'Public'], ['private', 'Private']].map(([v, l]) => (
+                  <button key={v} onClick={() => setFilterType(v)}
+                    className={`px-3 py-1.5 uppercase tracking-wider font-medium transition-all ${filterType === v ? 'bg-white text-black' : 'text-neutral-500 hover:text-white'}`}
+                  >{l}</button>
+                ))}
+              </div>
+              <div className="flex gap-px bg-white/5 text-[10px]">
+                {[['all', 'All'], ['reach', 'Reach'], ['target', 'Target'], ['safety', 'Safety']].map(([v, l]) => (
+                  <button key={v} onClick={() => setFilterDifficulty(v)}
+                    className={`px-3 py-1.5 uppercase tracking-wider font-medium transition-all ${filterDifficulty === v ? 'bg-white text-black' : 'text-neutral-500 hover:text-white'}`}
+                  >{l}</button>
+                ))}
+              </div>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-transparent border hairline px-3 py-1.5 text-[10px] uppercase tracking-wider text-neutral-400 outline-none cursor-pointer appearance-none pr-6"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 6px center' }}
+              >
+                <option value="fit">Sort: Best fit</option>
+                <option value="chance">Sort: Your chance</option>
+                <option value="accept">Sort: Accept rate</option>
+                <option value="cost">Sort: Lowest debt</option>
+              </select>
+            </div>
+
             <div className="grid grid-cols-1 gap-2 max-h-[580px] overflow-y-auto pr-1">
               {displayedColleges.map((c) => (
                 <CollegeCard
@@ -632,6 +818,27 @@ export default function CollegePage({ majorId, setMajorId, collegeId, setCollege
                 </div>
               </div>
             </div>
+
+            {/* Recommendations */}
+            {(() => {
+              const myChance = admissionChance(college, student);
+              const tips = getRecommendations(college, student, testMode, myChance);
+              return (
+                <div className="border hairline p-4 sm:p-5 bg-gradient-to-br from-black to-neutral-900/50">
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 mono mb-4">
+                    — How to improve your chances at {college.name}
+                  </div>
+                  <div className="space-y-3">
+                    {tips.map((tip, i) => (
+                      <div key={i} className="flex gap-3 items-start">
+                        <span className="text-base mt-0.5 shrink-0">{tip.icon}</span>
+                        <p className="text-[13px] text-neutral-300 leading-relaxed">{tip.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Major fit + vibe */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5">
